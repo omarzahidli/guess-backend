@@ -1,6 +1,7 @@
 import { GenderEnum } from "src/shared/enums/gender.enum";
 import { RoleEnum } from "src/shared/enums/role.enum";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BasketEntity } from "./Basket.entity";
 
 @Entity('user')
 export class UserEntity extends BaseEntity {
@@ -27,6 +28,9 @@ export class UserEntity extends BaseEntity {
 
     @Column()
     dateofbirth: Date
+
+    @OneToOne(() => BasketEntity, (basket) => basket.user, { cascade: true })
+    basket: BasketEntity;
 
     @CreateDateColumn()
     createAt: Date

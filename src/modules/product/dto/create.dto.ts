@@ -25,6 +25,11 @@ export class ProductCreateDto {
     stock: number;
 
     @Type()
+    @IsNumber()
+    @ApiProperty()
+    brandId: number
+
+    @Type()
     @IsArray()
     @ApiProperty({ isArray: true, enum: ColorEnum, example: [ColorEnum.BEIGE, ColorEnum.LAVENDER] })
     @IsEnum(ColorEnum, { each: true })

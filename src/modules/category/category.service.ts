@@ -13,28 +13,6 @@ export class CategoryService {
     ) { }
 
 
-    async getCategoryById(id: number) {
-        const category = await this.categoryRepo.findOne({
-            where: { id },
-            select: {
-                id: true,
-                name: true,
-                slug: true,
-                parent: {
-                    parentId: true,
-                    name: true,
-                    slug: true,
-                    id: true
-                }
-            },
-            relations: ['children']
-        });
-
-        if (!category) throw new NotFoundException('Category is not found with given id!')
-
-        return category
-    }
-
     async create(params: CategoryDto) {
         const checkedCategory = await this.categoryRepo.findOne({
             where: { slug: params.slug }

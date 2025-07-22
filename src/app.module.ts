@@ -12,6 +12,8 @@ import { CategoryModule } from './modules/category/category.module';
 import { ProductModule } from './modules/product/product.module';
 // import { SomeModule } from './modules/some/some.module';
 import database from './config/database';
+import { BrandModule } from './modules/brand/brand.module';
+import { BasketModule } from './modules/basket/basket.module';
 
 @Module({
   imports: [
@@ -30,9 +32,11 @@ import database from './config/database';
     }),
     AuthModule,
     UserModule,
+    BrandModule,
     UploadModule,
     CategoryModule,
-    ProductModule
+    ProductModule,
+    BasketModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -29,12 +29,6 @@ export class CategoryController {
         return category
     }
 
-    @Get(':id')
-    @ApiOperation({ summary: "Get categories by id and children" })
-    async getCategoryById(@Param("id") id: number) {
-        let result = await this.categoryService.getCategoryById(id)
-        return result
-    }
 
     @Post(':id')
     @Auth(RoleEnum.ADMIN)

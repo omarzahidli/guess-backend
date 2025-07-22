@@ -12,6 +12,8 @@ import {
 } from 'typeorm';
 import CategoryEntity from './Category.entity';
 import UploadEntity from './Upload.entity';
+import BrandEntity from './Brand.entity';
+import { BasketItemEntity } from './Basket.entity';
 
 @Entity('products')
 export class ProductEntity extends BaseEntity {
@@ -31,7 +33,7 @@ export class ProductEntity extends BaseEntity {
     stock: number;
 
     @Column({ unique: true })
-    slug: string
+    slug: string;
 
     @Column({ type: 'enum', enum: ColorEnum, array: true })
     colors: ColorEnum[];
@@ -42,10 +44,16 @@ export class ProductEntity extends BaseEntity {
     @OneToMany(() => UploadEntity, (image) => image.product, {
         cascade: true,
     })
-    images: UploadEntity[]
+    images: UploadEntity[];
 
     @Column()
-    categoryId: number
+    categoryId: number;
+
+    @Column()
+    brandId: number;
+
+    @OneToMany(() => BasketItemEntity, (item) => item.product)
+    basketItems: BasketItemEntity[];
 
     @ManyToOne(() => CategoryEntity, (category) => category.products, {
         nullable: false,
@@ -56,6 +64,16 @@ export class ProductEntity extends BaseEntity {
         referencedColumnName: 'id'
     })
     category: CategoryEntity;
+
+    @ManyToOne(() => BrandEntity, (brand) => brand.products, {
+        onDelete: "CASCADE",
+        nullable: false
+    })
+    @JoinColumn({
+        name: 'brandId',
+        referencedColumnName: 'id'
+    })
+    brand: BrandEntity;
 
     @CreateDateColumn()
     createdAt: Date;
