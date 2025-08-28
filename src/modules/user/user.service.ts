@@ -14,7 +14,7 @@ export class UserService {
     async getUserById(id: number) {
         let user = await this.userRepo.findOne({ where: { id } })
 
-        if (!user) throw new NotFoundException('User is not fpound with given id!')
+        if (!user) throw new NotFoundException('User is not found with given id!')
 
         return user
     }

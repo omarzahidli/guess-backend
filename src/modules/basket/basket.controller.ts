@@ -1,8 +1,7 @@
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { BasketService } from './basket.service';
 import { Auth } from 'src/shared/decorators/auth.decorator';
 import BasketDto from './dto/add.dto';
-import RemoveBasketDto from './dto/remove.dto';
 import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('basket')
@@ -20,26 +19,33 @@ export class BasketController {
         return basket
     }
 
-    @Post()
+    @Get('user/:userId')
+    @Auth() // optional, restrict to admin if needed
+    @ApiOperation({ summary: "Get basket by user ID" })
+    async getBasketForUser(@Param('userId') userId: number) {
+        return await this.basketService.getBasketByUser(userId);
+    }
+
+    @Post(':id')
     @Auth()
     @ApiOperation({
         summary: 'Add or update product quantity in basket',
         description: `
     This endpoint adds a product to the basket or updates its quantity.
-    - If \`quantity\` is **positive**, it will increment the quantity.
-    - If \`quantity\` is **negative**, it will decrement the quantity.
+    - If \quantity\ is *positive*, it will increment the quantity.
+    - If \quantity\ is *negative*, it will decrement the quantity.
     - If the quantity becomes 0, the product will be removed from the basket.
   `
     })
-    async addToBasket(@Body() params: BasketDto) {
-        let basket = await this.basketService.addBasket(params)
+    async addToBasket(@Body() params: BasketDto, @Param("id") id: number) {
+        let basket = await this.basketService.addBasket(id, params)
         return basket
     }
 
-    @Delete()
+    @Delete(":id")
     @Auth()
-    @ApiOperation({ summary: "Delete item from basket by productId" })
-    async deleteItem(@Body() params: RemoveBasketDto) {
-        return await this.basketService.removeFromBasket(params.id)
+    @ApiOperation({ summary: "Delete item from basket by basketId" })
+    async deleteItem(@Param("id") id: number) {
+        return await this.basketService.removeFromBasket(id)
     }
 }

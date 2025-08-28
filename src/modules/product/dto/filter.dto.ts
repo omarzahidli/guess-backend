@@ -4,10 +4,15 @@ import { IsOptional, IsArray, IsNumber, IsEnum } from 'class-validator';
 import { ColorEnum, SizeEnum } from 'src/shared/enums/products.enum';
 
 export class FilterProductsDto {
-    @ApiPropertyOptional({ type: Number, description: 'Category ID' })
+    @ApiPropertyOptional({ type: Number, description: 'Brand ID' })
     @IsOptional()
     @Type(() => Number)
     brandId?: number;
+
+    @ApiPropertyOptional({ type: Number, description: 'Category ID' })
+    @IsOptional()
+    @Type(() => Number)
+    categoryId?: number;
 
     @ApiPropertyOptional({
         type: [String],

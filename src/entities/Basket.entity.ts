@@ -10,13 +10,13 @@ export class BasketEntity extends BaseEntity {
     @Column({ default: 0 })
     totalItems: number;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+    @Column({ default: 0 })
     totalPrice: number;
 
-    @Column()
+    @Column({ unique: true }) // ✅ ensure one basket per user
     userId: number;
 
-    @OneToOne(() => UserEntity, (user) => user.basket)
+    @OneToOne(() => UserEntity, (user) => user.basket, { onDelete: "CASCADE" })
     @JoinColumn({ name: 'userId' })
     user: UserEntity;
 
@@ -41,11 +41,17 @@ export class BasketItemEntity extends BaseEntity {
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     price: number;
 
-    @OneToOne(() => BasketEntity, (basket) => basket.items)
+    @Column({ nullable: true })
+    color: string;
+
+    @Column({ nullable: true })
+    size: string;
+
+    @ManyToOne(() => BasketEntity, (basket) => basket.items, { onDelete: "CASCADE" })
     @JoinColumn({ name: 'basketId' })
     basket: BasketEntity;
 
-    @ManyToOne(() => ProductEntity, (product) => product.basketItems)
+    @ManyToOne(() => ProductEntity, (product) => product.basketItems, { onDelete: "CASCADE" })
     @JoinColumn({ name: 'productId' })
     product: ProductEntity;
 }

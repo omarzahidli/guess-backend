@@ -34,8 +34,10 @@ export class ProductService {
                 category: {
                     name: true,
                     id: true,
-                    slug: true
+                    slug: true,
+                    parentId: true
                 },
+                images: true,
                 id: true,
                 colors: true,
                 sizes: true,
@@ -56,8 +58,27 @@ export class ProductService {
         const skip = (page - 1) * limit;
 
         const [products, total] = await this.productRepo.findAndCount({
+            select: {
+                name: true,
+                description: true,
+                price: true,
+                stock: true,
+                category: {
+                    name: true,
+                    id: true,
+                    slug: true
+                },
+                images: true,
+                id: true,
+                colors: true,
+                sizes: true,
+                slug: true,
+                createdAt: true,
+                updatedAt: true
+            },
             skip,
             take: limit,
+            relations: ['category', 'images', 'brand'],
         });
 
         return {
@@ -100,9 +121,16 @@ export class ProductService {
 
     async filterProducts(params: FilterProductsDto) {
         const queryBuilder = this.productRepo.createQueryBuilder('product');
+        queryBuilder
+            .leftJoinAndSelect('product.images', 'images')
+            .leftJoinAndSelect('product.category', 'category');
 
         if (params.brandId) {
             queryBuilder.andWhere('product.brandId = :brandId', { brandId: params.brandId });
+        }
+
+        if (params.categoryId) {
+            queryBuilder.andWhere('category.id = :categoryId', { categoryId: params.categoryId });
         }
 
         if (params.colors && params.colors.length > 0) {
@@ -126,11 +154,8 @@ export class ProductService {
 
         const products = await queryBuilder.getMany();
 
-        if (!products || products.length === 0) {
-            throw new NotFoundException("Products not found with given parameters");
-        }
 
-        return products;
+        return products || [];
     }
 
     async create(params: ProductCreateDto) {
@@ -170,6 +195,7 @@ export class ProductService {
             categoryId: params.categoryId,
             brandId: params.brandId,
             price: params.price,
+            stock: params.stock,
             sizes: params.sizes,
             colors: params.colors,
             images: uploads,
@@ -197,7 +223,7 @@ export class ProductService {
 
         if (!category) throw new NotFoundException("Category is not found with given id!")
 
-        let product = await this.productRepo.findOne({
+        let product = await this.productRepo.find({ //burdda findOne idi find eledim
             where: { categoryId: category.id }, select: {
                 name: true,
                 description: true,
